@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zfpt.framework.model.AttachmentVo">
+
+	<resultMap type="com.zfpt.framework.model.AttachmentVo" id="AttachmentMap">
+		<id column="ID" property="pkId" />
+		<result column="BIZID" property="biz_id" />
+		<result column="ORIGINALNAME" property="original_name" />
+		<result column="MODCODE" property="mod_code" />
+		<result column="FILETYPE" property="file_type" />
+		<result column="FILEPATH" property="path" />
+		<result column="DESCRIPTION" property="description" />
+		<result column="CREATEDBY" property="createdby" />
+		<result column="CREATEAT" property="createAt" />
+	</resultMap>
+
+	<!-- 附件明细 -->
+	<select id="selectOne" parameterType="String"
+		resultMap="AttachmentMap">
+		SELECT
+		t.id,t.bizId,t.modCode,t.originalName,t.filePath,t.description,t.createdby
+		FROM zfpt_attachment t where t.id=#{pkId}
+	</select>
+
+	<!-- 根据业务id获取附件列表 -->
+	<select id="selectList" parameterType="com.zfpt.framework.model.AttachmentVo"
+		resultMap="AttachmentMap">
+		SELECT
+		t.id,t.bizId,t.modCode,t.originalName,t.filePath,t.description,t.createdby
+		FROM
+		zfpt_attachment t
+		WHERE
+		t.bizId=#{biz_id} and t.modCode=#{mod_code}
+	</select>
+
+	<insert id="save" parameterType="com.zfpt.framework.model.AttachmentVo">
+		INSERT INTO
+		zfpt_attachment(
+		 id,bizId,MODCODE,FILETYPE,originalName,filePath,description,createdby,createAt
+		)
+		VALUES(
+		#{pkId},#{biz_id},#{mod_code},#{file_type},#{original_name},#{path},#{description},#{createdby},#{createAt}
+		)
+
+	</insert>
+	
+	<!-- 批量添加 -->
+	<insert id="batchSave" parameterType="ArrayList">
+		INSERT INTO
+		zfpt_attachment(
+		 id,bizId,MODCODE,FILETYPE,originalName,filePath,description,createdby,createAt
+		)
+		VALUES
+		  <foreach collection="list" item="item" index="index" separator="," >  
+		   ( #{item.pkId},#{item.biz_id},#{item.mod_code},#{item.file_type},#{item.original_name},#{item.path},#{item.description},#{item.createdby},#{item.createAt})
+		  </foreach>
+	</insert>
+
+	<update id="update" parameterType="com.zfpt.framework.model.AttachmentVo">
+		UPDATE
+		zfpt_attachment
+		SET bizId=#{biz_id}
+		WHERE id=#{pkId}
+	</update>
+
+	<delete id="delete" parameterType="java.lang.String">
+		delete from zfpt_attachment where id = #{pkId}
+	</delete>
+
+	<delete id="mapper_deleteByExample" parameterType="com.zfpt.framework.model.AttachmentVo">
+		delete from zfpt_attachment where bizId = #{biz_id} and modCode=#{mod_code}
+	</delete>
+
+</mapper>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zfpt.web.model.system.Resource">
+      <!-- 系统资源表Mapper -->  
+    
+	<sql id="table">zfpt_system_resources</sql>
+	<sql id="Columns">ID,name,parentId,resKey,resUrl,level,description,createAt,sort</sql>
+     
+     <!-- 资源管理列表 -->
+     <resultMap type="Resource" id="ResourceResultMap">
+		<id column="ID" property="id"/>
+		<result column="name" property="resName"/>
+		<result column="parentId" property="parentId"/>
+		<result column="resKey" property="resKey"/>
+		<result column="type" property="type"/>
+		<result column="resUrl" property="resUrl"/>
+		<result column="level" property="level"/>
+		<result column="description" property="description"/>
+		<result column="createAt" property="createAt"/>
+		<result column="isDelete" property="isDelete"/>
+		<result column="sort" property="resOrder"/>
+	</resultMap>
+	
+	<!-- listPage -->
+	<select id="listPage" parameterType="page" resultMap="ResourceResultMap" useCache="false">
+		select  
+		 <include refid="Columns"/> 
+		   from  
+		  <include refid="table"/>
+	     <if test="orderBy != null">
+      		 order by ${orderBy} ${sort}
+     	 </if>
+    </select>
+    
+    <!-- 查询明细 -->
+    <select id="selectOne" parameterType="java.lang.Integer" resultMap="ResourceResultMap" useCache="false">
+		select  
+		 <include refid="Columns"/> 
+		   from  
+		  <include refid="table"/>    
+		    where id=#{id}
+    </select>
+    
+    
+    <!-- 资源信息列表 -->
+	<select id="selectResourceByParentId" parameterType="java.lang.Integer" resultMap="ResourceResultMap" >
+		select  
+		 <include refid="Columns"/> 
+		   from  
+		  <include refid="table"/>
+		   <!--   <if test="parentId!=0">
+		        where		parentId=#{parentId}
+		     </if> -->
+	</select>
+ 
+	<!-- 新增资源信息 -->
+    <insert id="save" parameterType="Resource">
+	 insert into 
+	   <include refid="table"/>
+	  (
+		<include refid="Columns"/>	
+	  ) values 
+	  (
+		#{id},#{resName},#{parentId},#{resKey},#{resUrl},#{level},#{description},#{createAt},#{resOrder}
+	  )
+	</insert>
+	
+    <!-- 修改资源信息 -->
+	<update id="update" parameterType="Resource">
+		update <include refid="table"/> 
+		set 
+		name=#{resName},resKey=#{resKey} ,resUrl=#{resUrl}, description=#{description},sort=#{resOrder}
+		where id=#{id}
+	</update>
+	
+	<!-- 删除资源信息 -->
+	<delete id="delete" parameterType="java.lang.Integer">
+		delete from <include refid="table"/> where id = #{id}
+	</delete>
+	
+	<!-- 删除子节点资源信息 -->
+	<delete id="deleteResourceByParentId" parameterType="java.lang.Integer">
+		delete from <include refid="table"/> where parentId = #{id}
+	</delete>
+	
+ 
+    <!-- 唯一性资源名称验证 -->
+	<select id="queryUnique" parameterType="java.util.Map" resultType="java.lang.Integer" statementType="STATEMENT">
+		select count(0) from <include refid="table"/>  
+		where   ${propertyKey}= ${propertyValue}
+	</select>
+	
+	
+	
+	
+	
+	
+	
+</mapper>

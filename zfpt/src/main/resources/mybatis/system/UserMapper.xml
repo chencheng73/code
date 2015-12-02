@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zfpt.web.model.system.User">
+
+    <!-- 系统用户表Mapper -->
+    <sql id="table">ZFPT_SYSTEM_USER</sql>
+    
+	<sql id="userColumns">
+	   id ,loginCode,userPassword,credentialsSalt,STATUS,userName,email,mobile,phone,remark,createAt,isDelete
+	</sql>
+	
+    <!-- 用户表 -->
+   	<resultMap type="User" id="userResultMap">
+		<id column="ID" property="id"/>
+		<result column="loginCode" property="loginCode"/>
+		<result column="userPassword" property="userPassword"/>
+		<result column="credentialsSalt" property="credentialsSalt"/>
+		<result column="STATUS" property="status"/>
+		<result column="userName" property="userName"/>
+		<result column="email" property="email"/>
+		<result column="mobile" property="mobile"/>
+		<result column="phone" property="phone"/>
+		<result column="remark" property="remark"/>
+		<result column="createAt" property="createAt"/>
+		<result column="isDelete" property="isDelete"/>
+	</resultMap>
+	
+	<!-- 用户角色关联表 -->
+	<resultMap type="Role" id="RoleResultMap">
+		<id column="ID" property="id"/>
+		<result column="roleName" property="roleName"/>
+		<result column="roleCode" property="roleCode"/>
+		<result column="description" property="description"/>
+		<result column="STATUS" property="status"/>
+		<result column="createAt" property="createAt"/>
+		<result column="isDelete" property="isDelete"/>
+	</resultMap>
+	
+	<!-- 分页查询 -->
+	<select id="listPage" parameterType="page" resultMap="userResultMap" useCache="false">
+		select  <include refid="userColumns"/>  from <include refid="table"/> u  
+	    <where>
+	      <if test="pageData.loginCode != null and pageData.loginCode != ''">
+		     loginCode like '%${pageData.loginCode}%'
+		  </if>
+	    </where>
+	     <if test="orderBy != null">
+      		 order by ${orderBy} ${sort}
+     	 </if>
+   </select>
+   
+	<!-- 列表查询-->
+	<select id="selectList" parameterType="User" resultMap="userResultMap">
+		select <include refid="userColumns"/> from <include refid="table"/>  
+		where 1=1
+		<if test="id!=null">
+		and id = #{id}
+		</if>
+	</select>
+	
+	<!-- 根据主键查询明细 -->
+	<select id="selectOne" parameterType="java.lang.Integer" resultMap="userResultMap">
+		select <include refid="userColumns"/> from <include refid="table"/>  
+		where  id = #{id}
+	</select>
+	
+	
+	<!-- 查询对象 -->
+	<select id="findByExample" parameterType="User" resultMap="userResultMap">
+		select <include refid="userColumns"/> from <include refid="table"/>  
+		where 1=1
+		<if test="id!=null">
+		  and id = #{id}
+		</if>
+		<if test="loginCode!=null">
+		  and loginCode = #{loginCode}
+		</if>
+		<if test="userName!=null">
+		  and userName = #{userName}
+		</if>
+	</select>
+	
+	<!-- 用户角色关联信息 -->
+	<select id="getUserAndRoleById" parameterType="java.lang.Integer" resultMap="RoleResultMap">
+		 SELECT role.id,role.roleName,role.status  
+		   FROM  zfpt_system_role role  
+		     WHERE role.id 
+               IN(
+     			  SELECT  ur.role_id FROM zfpt_system_user_role ur   WHERE ur.user_id=#{id}
+			)
+	</select>
+	
+    <!-- 新增 -->
+    <insert id="save" parameterType="User">
+		insert into <include refid="table"/>(
+			<include refid="userColumns"/>
+		) values (
+			#{id},#{loginCode},#{userPassword},#{credentialsSalt},
+			#{status},#{userName},#{email},#{mobile},
+			#{phone},#{remark},#{createAt},	#{isDelete}
+		)
+	</insert>
+		 
+	<!-- 修改 -->	
+	<update id="update" parameterType="User">
+		update <include refid="table"/> set 
+		  userName=#{userName}
+		 <if test="email != null and email != ''">
+			,email= #{email}
+		</if>  
+		<if test="status != null and status != ''">
+			,status= #{status}
+		</if>  
+		<if test="userPassword != null and userPassword != ''">
+			,userPassword= #{userPassword},credentialsSalt=#{credentialsSalt}
+		</if>
+		where id=#{id}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="delete" parameterType="java.lang.Integer">
+		delete from <include refid="table"/> where id = #{id}
+	</delete>
+	 
+	 	<!-- 删除用户对应的角色信息 -->
+	<update id="deleteUserAndRoles" parameterType="java.lang.Integer">
+		 delete from zfpt_system_user_role where user_id=#{id}
+	</update>
+	
+	 <!-- 新增用户角色信息 -->
+	 <insert id="saveUserAndRoles" parameterType="ArrayList">
+		INSERT INTO
+		ZFPT_SYSTEM_USER_ROLE(
+		 user_id,role_id
+		)
+		VALUES
+		  <foreach collection="list" item="item" index="index" separator="," >  
+		   ( #{item.userid},#{item.roleid})
+		  </foreach>
+	</insert>
+	
+	<!-- 唯一性验证 -->
+	<select id="queryUnique" parameterType="java.util.Map" resultType="java.lang.Integer" statementType="STATEMENT">
+		select count(0) from <include refid="table"/>  
+		where   ${propertyKey}= ${propertyValue}
+	</select>
+	
+	
+</mapper>

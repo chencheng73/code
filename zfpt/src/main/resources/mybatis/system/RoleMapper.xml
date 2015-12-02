@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zfpt.web.model.system.Role">
+      <!-- 系统角色表Mapper -->  
+    
+	<sql id="Role_body">ZFPT_SYSTEM_ROLE</sql>
+	<sql id="RoleColumns">ID,roleName,roleCode,description,STATUS,createAt,isDelete</sql>
+
+    <!-- 角色列表 -->
+	<resultMap type="Role" id="RoleResultMap">
+		<id column="ID" property="id"/>
+		<result column="roleName" property="roleName"/>
+		<result column="roleCode" property="roleCode"/>
+		<result column="description" property="description"/>
+		<result column="STATUS" property="status"/>
+		<result column="createAt" property="createAt"/>
+		<result column="isDelete" property="isDelete"/>
+	</resultMap>
+	
+    <!-- 角色权限联合查询 -->
+	<resultMap type="Resource" id="ResourceResultMap">
+		<id column="ID" property="id"/>
+		<result column="name" property="resName"/>
+		<result column="parentId" property="parentId"/>
+		<result column="resKey" property="resKey"/>
+		<result column="type" property="type"/>
+		<result column="resUrl" property="resUrl"/>
+		<result column="level" property="level"/>
+		<result column="description" property="description"/>
+		<result column="createAt" property="createAt"/>
+		<result column="isDelete" property="isDelete"/>
+		<result column="sort" property="resOrder"/>
+	</resultMap>
+	
+    <!-- listPage -->
+	<select id="listPage" parameterType="page" resultMap="RoleResultMap" useCache="false">
+		select  
+		 <include refid="RoleColumns"/> 
+		   from  
+		  <include refid="Role_body"/>
+		  <where>
+	      <if test="pageData.roleName != null and pageData.roleName != ''">
+		     roleName like '%${pageData.roleName}%'
+		  </if>
+	    </where>
+	     <if test="orderBy != null">
+      		 order by ${orderBy} ${sort}
+     	 </if>
+    </select>
+    
+    <!-- 查询明细 -->
+    <select id="selectOne" parameterType="java.lang.Integer" resultMap="RoleResultMap" useCache="false">
+		select  
+		 <include refid="RoleColumns"/> 
+		   from  
+		  <include refid="Role_body"/>    
+		    where id=#{id}
+    </select>
+    
+	<select id="selectList" parameterType="Role" resultMap="RoleResultMap">
+		select 
+		  <include refid="RoleColumns"/> 
+		from 
+		  <include refid="Role_body"/> where 1=1
+			<if test="id!=null">
+				and id = #{id}
+			</if>
+	</select>
+	
+	<!-- 新增角色信息 -->
+    <insert id="save" parameterType="Role">
+	 insert into 
+	   <include refid="Role_body"/>
+	  (
+		<include refid="RoleColumns"/>	
+	  ) values 
+	  (
+		#{id},#{roleName},#{roleCode},#{description},#{status},#{createAt},#{isDelete}
+	  )
+	</insert>
+	
+    <!-- 修改角色信息 -->
+	<update id="update" parameterType="Role">
+		update <include refid="Role_body"/> 
+		set 
+		roleCode=#{roleCode},roleName=#{roleName} ,description=#{description} where id=#{id}
+	</update>
+	
+	<!-- 删除角色信息 -->
+	<delete id="delete" parameterType="java.lang.Integer">
+		delete from <include refid="Role_body"/> where id = #{id}
+	</delete>
+	
+    <!-- 唯一性验证 -->
+	<select id="queryUnique" parameterType="java.util.Map" resultType="java.lang.Integer" statementType="STATEMENT">
+		select count(0) from <include refid="Role_body"/>  
+		where   ${propertyKey}= ${propertyValue}
+	</select>
+	
+	
+	   
+    <!-- 角色权限关联信息 -->
+	<select id="getRoleAndResourceById" parameterType="java.lang.Integer" resultMap="ResourceResultMap" >
+		 SELECT  res.id,res.parentId, res.resKey,res.name,res.type,res.resUrl,res.level,res.description,res.sort  
+		    FROM zfpt_system_resources res
+ 				 WHERE res.id IN (
+   					SELECT e.resource_id  FROM   zfpt_system_role_resource e  WHERE e.role_id=#{id}
+                )
+	</select>
+	
+	<!-- 新增角色权限 -->
+	<insert id="saveRoleAndResource" parameterType="ArrayList">
+		INSERT INTO
+		zfpt_system_role_resource(
+		 role_id,resource_id
+		)
+		VALUES
+		  <foreach collection="list" item="item" index="index" separator="," >  
+		   ( #{item.roleid},#{item.resourceid})
+		  </foreach>
+	</insert>
+	
+	<!-- 删除角色对应的权限 -->
+	<delete id="deleteRoleAndResource" parameterType="java.lang.Integer">
+		delete from zfpt_system_role_resource where role_id = #{id}
+	</delete>
+	
+</mapper>
