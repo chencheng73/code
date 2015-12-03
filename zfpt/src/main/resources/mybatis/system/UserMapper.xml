@@ -66,19 +66,10 @@
 	</select>
 	
 	
-	<!-- 查询对象 -->
-	<select id="findByExample" parameterType="User" resultMap="userResultMap">
-		select <include refid="userColumns"/> from <include refid="table"/>  
-		where 1=1
-		<if test="id!=null">
-		  and id = #{id}
-		</if>
-		<if test="loginCode!=null">
-		  and loginCode = #{loginCode}
-		</if>
-		<if test="userName!=null">
-		  and userName = #{userName}
-		</if>
+	<!-- 登录验证 -->
+	<select id="validateUser" parameterType="java.lang.String" resultMap="userResultMap">
+		select <include refid="userColumns"/> from <include refid="table"/>   
+		  where loginCode=#{loginName}
 	</select>
 	
 	<!-- 用户角色关联信息 -->
@@ -145,6 +136,5 @@
 		select count(0) from <include refid="table"/>  
 		where   ${propertyKey}= ${propertyValue}
 	</select>
-	
 	
 </mapper>

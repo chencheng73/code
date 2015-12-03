@@ -30,7 +30,7 @@ public interface IUserService extends GenericService {
 	 * 创建时间：2015年11月26日 上午11:40:49
 	 * @throws
 	 */
-	public User loginUser(User user)throws ServiceException;
+	public User loginUser(String loginCode)throws ServiceException;
 	
 	/**
 	 * 方法名称: findRolesByUserId

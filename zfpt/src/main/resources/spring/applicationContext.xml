@@ -106,15 +106,23 @@
     <!-- 启用对事务注解的支持 -->
     <tx:annotation-driven transaction-manager="transactionManager"/>
 
-    <!-- Cache配置 -->
-    <cache:annotation-driven cache-manager="cacheManager"/>
-    <bean id="ehCacheManagerFactory" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean"
-          p:configLocation="classpath:ehcache.xml"/>
-    <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager"
-          p:cacheManager-ref="ehCacheManagerFactory"/>
-         
       <!-- sqlSession模板 --> 
       <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
 		<constructor-arg ref="sqlSessionFactory" />
 	</bean>
+	
+	<!-- spring cache缓存管理器 -->
+	<bean id="cacheManager" class="com.zfpt.web.security.cache.SpringCacheManagerWrapper" >
+		<property name="cacheManager" ref="springCacheManager"/>
+	</bean>
+	
+	 <bean id="springCacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager">
+        <property name="cacheManager" ref="ehcacheManager"/>
+    </bean>
+
+    <!--ehcache-->
+    <bean id="ehcacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+        <property name="configLocation" value="classpath:ehcache.xml"/>
+    </bean>
+	
 </beans>

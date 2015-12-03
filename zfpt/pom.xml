@@ -252,7 +252,9 @@
             <artifactId>shiro-quartz</artifactId>
             <version>${shiro.version}</version>
         </dependency>
+       
 
+ 
         <!-- aspectjweaver -->
         <dependency>
             <groupId>org.aspectj</groupId>

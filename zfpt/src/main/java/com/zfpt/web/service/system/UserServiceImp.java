@@ -67,9 +67,16 @@ public class UserServiceImp extends GenericServiceImpl implements IUserService,M
 	public User findUserById(Map<String,Object> dataMap) throws ServiceException {
 		return super.selectOne(User.class,dataMap);
 	}
-
-	public User loginUser(User user) throws ServiceException {
-		return super.selectOne(user);
+    
+	/**
+	 * 用户登录验证
+	 * @param loginName
+	 * @return
+	 * @throws ServiceException
+	 * @see com.zfpt.web.service.system.IUserService#loginUser(java.lang.String)
+	 */
+	public User loginUser(String  loginName) throws ServiceException {
+		return super.getSqlSessionTemplate().selectOne(User.class.getName()+".validateUser", loginName);
 	}
 	
 	/**
