@@ -52,7 +52,7 @@ public class SecurityRealm extends AuthorizingRealm {
 				   List<Resource> resources=roleService.findReourceByRoleId(role.getId());
 				   authorizationInfo.addRole(role.getRoleName());
 				   for(Resource resource:resources){
-					   authorizationInfo.addStringPermission(resource.getResUrl());
+					   authorizationInfo.addStringPermission(resource.getResUrl()+"");
 				   }
 			   }	
 			}

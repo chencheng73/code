@@ -55,18 +55,6 @@
 		<property name="loginUrl" value="/login/index" />
 		<property name="successUrl" value="/login/main" />
 		<property name="unauthorizedUrl" value="/denied.jsp" />
-		<!-- 自定义权限配置 -->
-	    <property name="filterChainDefinitionMap" ref="chainDefinitionSectionMetaSource" />  
-	    <property name="filters">
-            <util:map>
-               <!--  <entry key="sysUser" value-ref="sysUserFilter"/> -->
-                <entry key="kickout" value-ref="kickoutSessionControlFilter"/>
-            </util:map>
-         </property>
-	</bean>
-	
-	<!-- 自定义权限配置 -->
-	<bean id="chainDefinitionSectionMetaSource" class="com.zfpt.web.security.ChainDefinitionSectionMetaSource">
 		<property name="filterChainDefinitions">
 		   <value>
                 <!-- 静态资源允许访问 -->
@@ -82,7 +70,13 @@
                 /** = authc
 			</value>
 		</property>
+	    <property name="filters">
+            <util:map>
+                <entry key="kickout" value-ref="kickoutSessionControlFilter"/>
+            </util:map>
+         </property>
 	</bean>
+	
  
 	<bean id="sessionIdGenerator" class="org.apache.shiro.session.mgt.eis.JavaUuidSessionIdGenerator"/>
 	

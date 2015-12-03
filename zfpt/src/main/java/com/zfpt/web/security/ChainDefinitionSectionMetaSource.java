@@ -4,15 +4,9 @@ import java.util.List;
 import org.apache.shiro.config.Ini;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.zfpt.framework.context.LoginManger;
 import com.zfpt.framework.util.StringUtils;
 import com.zfpt.web.model.system.MenuTreeObject;
-import com.zfpt.web.model.system.Resource;
-import com.zfpt.web.model.system.Role;
 import com.zfpt.web.service.system.IResourceService;
-import com.zfpt.web.service.system.IRoleService;
-import com.zfpt.web.service.system.IUserService;
-
 /**
  * 产生责任链，确定每个url的访问权限
  */
@@ -35,10 +29,10 @@ public class ChainDefinitionSectionMetaSource implements FactoryBean<Ini.Section
     	if(resources!=null&&resources.size()>0){
     	   for(MenuTreeObject menuTreeObject : resources){
     		   /**遍历资源信息 **/
- 			   if(StringUtils.isNotEmpty(menuTreeObject.getHref())) { 
- 					String permission = "perms[" + menuTreeObject.getHref() + "]";
+ 			   if(StringUtils.isNotEmpty(menuTreeObject.getId()+"")) { 
+ 					String permission = "perms[" + menuTreeObject.getId() + "]";
  					System.out.println(permission);
- 					section.put(menuTreeObject.getHref(), permission);
+ 					section.put(menuTreeObject.getId()+"", permission);
  				}
 		   }	
     	}
