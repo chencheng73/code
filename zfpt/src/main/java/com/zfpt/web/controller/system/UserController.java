@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.zfpt.framework.context.LoginManger;
 import com.zfpt.framework.controller.BaseController;
 import com.zfpt.framework.filter.Pager;
 import com.zfpt.framework.util.DateUtils;
@@ -190,6 +192,53 @@ public class UserController  extends BaseController{
     	}
     	return responseResult;
    	}
+    
+    /**
+     * 方法名称: to_updatePwd
+     * 方法描述: 更新密码
+     * 返回类型: String
+     * 创建人：chens
+     * 创建时间：2015年12月4日 下午4:32:27
+     * @throws
+     */
+    @RequestMapping(value="/to_updatePwd")
+    public String  to_updatePwd(){
+    	return "/system/user/updatePwd";
+   	}
+    
+    /**
+     * 方法名称: updatePwd
+     * 方法描述: 更新用户密码
+     * 返回类型: ResponseResult<String>
+     * 创建人：chens
+     * 创建时间：2015年12月4日 下午4:16:58
+     * @throws
+     */
+    @RequestMapping(value="/updatePwd",method=RequestMethod.POST)
+   	public @ResponseBody ResponseResult<String>  updatePwd(String orgiPasswd,String newPassword){
+    	ResponseResult<String> responseResult=new ResponseResult<String>(); 
+    	User user=LoginManger.getLoginUser();
+    	 /**将原始密码进行加密操作 **/
+    	int updateCount=0;
+    	if(StringUtils.isNotEmpty(newPassword)&&StringUtils.isNotEmpty(newPassword)){
+    	   PasswordHelper passwordHelper = new PasswordHelper();
+    	   String orgPwd=passwordHelper.getEncryptPassword(user.getCredentialsSalt(),user.getLoginCode(), orgiPasswd);
+    	   if(StringUtils.isNotEmpty(orgPwd)&&orgPwd.equals(user.getUserPassword())){
+    		  user.setUserPassword(newPassword); 
+    		  passwordHelper.encryptPassword(user);   
+    		  updateCount=userService.updateUser(user);
+    		  responseResult.setUpdateCount(updateCount);
+     		  responseResult.setInfo("用户更新成功!");
+    	   }else{
+    		  responseResult.setUpdateCount(updateCount);
+      		  responseResult.setInfo("原密码输入有误!");  
+    	   }
+    	} 
+    	return responseResult;
+   	}
+    
+    
+    
     
     
     //跳转到用户列表、新增用户页面
