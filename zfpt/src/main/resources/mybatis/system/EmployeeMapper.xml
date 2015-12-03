@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zfpt.web.model.system.Employee">
+
+    <!-- 员工表Mapper -->
+    <sql id="table">zfpt_system_employee</sql>
+    
+	<sql id="employeeColumns">
+	   empployee_id, name, email,tele, gender, address, deptId, birthday, hireDate, leavingDate, isDelete, memo1, memo2
+	</sql>
+	
+    <!-- 员工表 -->
+   	<resultMap type="com.zfpt.web.model.system.Employee" id="employeeResultMap">
+		<id column="empployee_id" property="empployeeId" jdbcType="BIGINT"/>
+		<result column="deptId" property="deptId" jdbcType="BIGINT"/>
+		<result column="birthday" property="birthday" jdbcType="BIGINT"/>
+		<result column="hireDate" property="hireDate" jdbcType="BIGINT"/>
+		<result column="leavingDate" property="leavingDate" jdbcType="BIGINT"/>
+		
+		<result column="gender" property="gender" jdbcType="INTEGER"/>
+		<result column="isDelete" property="isDelete" jdbcType="INTEGER"/>
+		
+		<result column="name" property="name"   jdbcType="VARCHAR"/>
+		<result column="email" property="email" jdbcType="VARCHAR"/>
+		<result column="address" property="address" jdbcType="VARCHAR"/>
+		
+		<result column="memo1" property="memo1" jdbcType="VARCHAR"/>
+		<result column="memo2" property="memo2" jdbcType="VARCHAR"/>
+		
+	</resultMap>
+	
+	
+	
+	<!-- 分页查询 -->
+	<select id="listPage" parameterType="page" resultMap="employeeResultMap" useCache="false">
+		select  <include refid="employeeColumns"/>  from <include refid="table"/> u  
+   </select>
+   
+   <!-- 配置查询条件实例
+	   <select id="listPage" parameterType="page" resultMap="RoleResultMap" useCache="false">
+			select  
+			 <include refid="RoleColumns"/> 
+			   from  
+			  <include refid="Role_body"/>
+			  <where>
+		      <if test="pageData.roleName != null and pageData.roleName != ''">
+			     roleName like '%${pageData.roleName}%'
+			  </if>
+		    </where>
+		     <if test="orderBy != null">
+	      		 order by ${orderBy} ${sort}
+	     	 </if>
+	   </select>
+    -->
+   
+	<!-- 列表查询-->
+	<select id="selectList" parameterType="com.zfpt.web.model.system.Employee" resultMap="employeeResultMap">
+		select <include refid="employeeColumns"/> from <include refid="table"/>  
+		where 1=1
+		<if test="empployeeId!=null">
+		and empployee_id = #{empployeeId}
+		</if>
+	</select>
+	
+	<!-- 主键查询:根据员工工号查询明细 -->
+	<select id="selectOne" parameterType="java.lang.Long" resultMap="employeeResultMap">
+		select <include refid="employeeColumns"/> from <include refid="table"/>  
+		where  empployee_id = #{empployeeId}
+	</select>
+	
+	
+	<!-- 查询对象 -->
+	<select id="findByExample" parameterType="com.zfpt.web.model.system.Employee" resultMap="employeeResultMap">
+		select <include refid="employeeColumns"/> from <include refid="table"/>  
+		where 1=1
+		<if test="empployeeId!=null">
+		  and empployee_id = #{empployeeId}
+		</if>
+		<if test="name!=null">
+		  and name = #{name}
+		</if>
+		<if test="isDelete!=null">
+		  and isDelete = #{isDelete}
+		</if>
+	</select>
+	
+	
+	
+    <!-- 新增 -->
+    <insert id="save" parameterType="com.zfpt.web.model.system.Employee">
+		insert into <include refid="table"/>(
+			<include refid="employeeColumns"/>
+		) values (
+			#{empployeeId},#{name},#{email},#{tele},
+			#{gender},#{address},#{deptId},#{birthday},
+			#{hireDate},#{leavingDate},'1',#{memo1},#{memo2}
+		)
+	</insert>
+		 
+	<!-- 修改 -->	
+	<update id="update" parameterType="com.zfpt.web.model.system.Employee">
+	  update <include refid="table"/>
+		set name =#{name}
+		<if test="tele != null and tele != ''">
+			,tele=#{tele}
+		</if>
+		<if test="email != null and email != ''">
+			,email=#{email}
+		</if>
+		<if test="gender != null and gender != ''">
+			,gender=#{gender}
+		</if>
+		<if test="address != null and address != ''">
+			,address=#{address}
+		</if>
+		<if test="deptId != null and deptId != ''">
+			,deptId =#{deptId }
+		</if>
+		<if test="birthday != null and birthday != ''">
+			,birthday=#{birthday}
+		</if>
+		<if test="hireDate != null and hireDate != ''">
+			,hireDate=#{hireDate}
+		</if>
+		<if test="leavingDate != null and leavingDate != ''">
+			,leavingDate=#{leavingDate}
+		</if>
+		<if test="isDelete != null and isDelete != ''">
+			,isDelete= #{isDelete}
+		</if>		
+			where empployee_id=#{empployeeId}
+	</update>
+	
+	<!-- 删除 -->	
+	<!-- 根据员工工号，将员工状态设置为无效0-->	
+	<update id="delete" parameterType="java.lang.Long">
+		update <include refid="table"/> set 
+		isDelete=0 where empployee_id=#{empployeeId}
+	</update>
+	
+	<!-- 唯一性验证 -->
+	<select id="queryUnique" parameterType="java.util.Map" resultType="java.lang.Integer" statementType="STATEMENT">
+		select count(0) from <include refid="table"/>  
+		where   ${propertyKey}= ${propertyValue}
+	</select>
+</mapper>
