@@ -1,14 +1,13 @@
 package com.zfpt.web.controller.system;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.LogManager;
 
 import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.shiro.SecurityUtils;
@@ -24,14 +23,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.zfpt.framework.context.LoginManger;
+import com.zfpt.framework.context.ThreadContextHolder;
 import com.zfpt.framework.util.JsonUtils;
 import com.zfpt.framework.util.StringUtils;
+import com.zfpt.web.common.AppCons;
 import com.zfpt.web.model.system.MenuTreeObject;
 import com.zfpt.web.model.system.Resource;
 import com.zfpt.web.model.system.Role;
 import com.zfpt.web.model.system.User;
+import com.zfpt.web.service.system.IResourceService;
 import com.zfpt.web.service.system.IRoleService;
 import com.zfpt.web.service.system.IUserService;
 /**      
@@ -52,6 +53,8 @@ public class LoginController{
     private IUserService userService;
 	@Autowired
 	private IRoleService roleService;
+	@Autowired
+	private IResourceService resourceService;
     
     /**
      * 方法名称: init_login
@@ -72,7 +75,7 @@ public class LoginController{
      * 方法描述: 用户安全登录
      * 返回类型: Map<String,Object>
      * 创建人：chens
-     * 创建时间：2015年11月23日 下午5:40:35
+     * 创建时间：2015年12月3日 下午5:40:35
      * @throws
      */
     @RequestMapping(value="/login",method=RequestMethod.POST)
@@ -113,9 +116,22 @@ public class LoginController{
 			returnInfo.put("status",4);
 			returnInfo.put("info","登录异常，请联系管理员！");
 		}
+		loadSystemResource();
 		return JsonUtils.toJSON(returnInfo);
 	}
     
+	private void loadSystemResource() {
+	      List<MenuTreeObject> menuTreeObjects=resourceService.findResourcesByParentId(0);
+	      Set<String> menuSet=new HashSet<String>();
+	  	  if(menuTreeObjects!=null&&menuTreeObjects.size()>0){
+		     for(MenuTreeObject meTreeObject : menuTreeObjects) {
+	            if(StringUtils.isNotEmpty(meTreeObject.getHref())){
+	    	       menuSet.add(meTreeObject.getHref());
+	            }
+		     }
+		     AppCons.menuSet=menuSet;
+		   }	
+		}
     
     /**
      * 方法名称: main
@@ -133,6 +149,8 @@ public class LoginController{
     	/**角色列表 **/
     	List<Role> roles=userService.findRolesByUserId(uid);
     	Set<MenuTreeObject> treeObjects=new HashSet<MenuTreeObject>();
+    	/**存储当前用户的资源url **/
+    	Set<String> menuSet=new HashSet<String>();
     	if(roles!=null&&roles.size()>0){
     	   for(Role role : roles){
     		   /**资源信息 **/
@@ -145,11 +163,16 @@ public class LoginController{
 				   meTreeObject.setName(resource.getResName());
 				   meTreeObject.setpId(resource.getParentId());
     		       treeObjects.add(meTreeObject);
+    		       if(StringUtils.isNotEmpty(resource.getResUrl())){
+    		    	  menuSet.add(resource.getResUrl());
+    		       }
 	 		   }
 		   }	
     	}
     	model.addAttribute("userInfo",LoginManger.getUserName());
     	model.addAttribute("menus",treeObjects);
+    	/**存储菜单信息到ThreadLocal **/
+    	LoginManger.setResource(menuSet);
     	System.out.println("资源列表:"+treeObjects);
    		return "/system/homepage/main";
    	}
@@ -162,7 +185,7 @@ public class LoginController{
      * 创建时间：2015年12月3日 上午11:45:13
      * @throws
      */
-    @RequestMapping(value = "logout")
+    @RequestMapping(value = "/logout")
 	public String logout() {
 		SecurityUtils.getSubject().logout();  
 		return "redirect:login";
