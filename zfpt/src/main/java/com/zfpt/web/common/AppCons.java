@@ -1,5 +1,7 @@
 package com.zfpt.web.common;
 
+import java.util.Set;
+
 /**      
  * 项目名称：zfpt   
  * 类名称：AppCons   
@@ -11,6 +13,8 @@ package com.zfpt.web.common;
  */
 
 public class AppCons {
+	/**上下文路径 **/
+	public static String contextPath;
 	/**系统部署目录**/
 	public static String system_path;
     /**附件上传根目录(后期可考虑数据字典) **/
@@ -19,5 +23,7 @@ public class AppCons {
 	public final static String file_upload_path=file_root+"/upload/";
 	/**不同的业务模块存储在不同的路径code,默认common,同时便于用于数据库区分 **/
 	public final static String file_mod_code="common";
+	
+	public static Set<String> menuSet;
 	
 }
