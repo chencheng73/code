@@ -19,6 +19,7 @@ public class WebAppContextListener implements ServletContextListener {
 
 	public void contextInitialized(ServletContextEvent event) {
 		AppCons.system_path=event.getServletContext().getRealPath("/");
+		AppCons.contextPath=event.getServletContext().getContextPath();
 	}
 
 }

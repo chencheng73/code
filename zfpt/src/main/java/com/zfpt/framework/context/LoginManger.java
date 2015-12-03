@@ -1,7 +1,10 @@
 package com.zfpt.framework.context;
 
+import java.util.Set;
+
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
+
 import com.zfpt.web.model.system.User;
 /**
  * 项目名称：zfpt   
@@ -15,6 +18,8 @@ import com.zfpt.web.model.system.User;
 public class LoginManger {
 	
 	private static String userSessionKey="userSession";
+	
+	private static String userResourceKey="userResource";
 	
 	protected static Session getSeesion(){
 		return SecurityUtils.getSubject().getSession();
@@ -90,4 +95,14 @@ public class LoginManger {
 		User user=getLoginUser();
 		return user==null?null:user.getDeptmentId();
 	}
+	
+	public static Set<String> getResource(){
+		return (Set<String>) getSeesion().getAttribute(userResourceKey);
+	}
+	
+	public static void setResource(Set<String> resources){
+		getSeesion().setAttribute(userResourceKey, resources);
+	}
+	
+	
 }
