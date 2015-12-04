@@ -19,14 +19,14 @@ function login(){
    } 
     $.ajax({
 	    type: 'POST',
-	    url: '${pageContext.request.contextPath}/login/login',
+	    url: '${pageContext.request.contextPath}/login',
 	    data: $("form").serialize(),
 	    dataType:"json",
 	    success: function(result) {
 	    	if(result.status!=0){
 	    	   alert(result.info);	
 	    	}else{
-               window.location.href="${pageContext.request.contextPath}/login/main";	    		
+               window.location.href="${pageContext.request.contextPath}/main.html";	//跳转到主页面    		
 	    	}
 	    }
 	}); 	  
