@@ -18,4 +18,16 @@ public class PasswordHelper {
 		String newPassword = new SimpleHash(algorithmName, user.getUserPassword(), ByteSource.Util.bytes(user.getLoginCode()+salt), hashIterations).toHex();
 		user.setUserPassword(newPassword);
 	}
+	/**
+	 * 方法名称: getEncryptPassword
+	 * 方法描述: 返回加密后密码
+	 * 返回类型: String
+	 * 创建人：chens
+	 * 创建时间：2015年12月4日 下午4:25:54
+	 * @throws
+	 */
+	public  String getEncryptPassword(String salt,String userName,String userPassword){
+		return new SimpleHash(algorithmName, userPassword, ByteSource.Util.bytes(userName+salt), hashIterations).toHex();
+	}
+	
 }

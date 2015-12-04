@@ -1,12 +1,12 @@
 package com.zfpt.web.controller.system;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.LogManager;
-
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import com.zfpt.framework.context.LoginManger;
-import com.zfpt.framework.context.ThreadContextHolder;
 import com.zfpt.framework.util.JsonUtils;
 import com.zfpt.framework.util.StringUtils;
 import com.zfpt.web.common.AppCons;
@@ -45,7 +44,7 @@ import com.zfpt.web.service.system.IUserService;
  * @version      
  */
 @RestController
-@RequestMapping(value="/login")
+@RequestMapping(value="/")
 public class LoginController{
 	private Log logger=LogFactory.getLog(LogFactory.class);
 	
@@ -57,17 +56,17 @@ public class LoginController{
 	private IResourceService resourceService;
     
     /**
-     * 方法名称: init_login
+     * 方法名称: init
      * 方法描述: 初始化登录界面
      * 返回类型: String
      * 创建人：chens
      * 创建时间：2015年11月23日 下午5:40:57
      * @throws
      */
-    @RequestMapping(value="/index")
+    @RequestMapping(value="index.html")
 	public String init_login(){
     	logger.debug("--进行登录页面 --");
-		return "login";
+		return "../../login";
 	}
     
     /**
@@ -78,7 +77,7 @@ public class LoginController{
      * 创建时间：2015年12月3日 下午5:40:35
      * @throws
      */
-    @RequestMapping(value="/login",method=RequestMethod.POST)
+    @RequestMapping(value="login",method=RequestMethod.POST)
     @ResponseBody
     public Object  login(User user, HttpServletRequest request) throws UnknownAccountException {
     	Map<String,Object> returnInfo=new HashMap<String,Object>();
@@ -116,10 +115,19 @@ public class LoginController{
 			returnInfo.put("status",4);
 			returnInfo.put("info","登录异常，请联系管理员！");
 		}
+		/**初始化加载系统菜单 **/
 		loadSystemResource();
 		return JsonUtils.toJSON(returnInfo);
 	}
     
+    /**
+     * 方法名称: loadSystemResource
+     * 方法描述: 加载系统菜单
+     * 返回类型: void
+     * 创建人：chens
+     * 创建时间：2015年12月4日 上午9:52:54
+     * @throws
+     */
 	private void loadSystemResource() {
 	      List<MenuTreeObject> menuTreeObjects=resourceService.findResourcesByParentId(0);
 	      Set<String> menuSet=new HashSet<String>();
@@ -134,6 +142,23 @@ public class LoginController{
 		}
     
     /**
+     * 方法名称: logout
+     * 方法描述: 用户注销，跳转到登录页面
+     * 返回类型: String
+     * 创建人：chens
+     * 创建时间：2015年12月3日 上午11:45:13
+     * @throws
+     */
+    @RequestMapping(value = "logout.html")
+	@ResponseBody
+    public void  logout() {
+		SecurityUtils.getSubject().logout();  
+	}
+    
+    
+    /******************登录成功后，加载首页数据 **********************/
+    
+    /**
      * 方法名称: main
      * 方法描述: 登录成功，跳转到主页
      * 返回类型: String
@@ -141,54 +166,75 @@ public class LoginController{
      * 创建时间：2015年12月3日 上午10:55:48
      * @throws
      */
-    @RequestMapping(value="/main")
+    @RequestMapping(value="main.html")
    	public String main(Model model){
-    	logger.info(LoginManger.getLoginName());
-    	logger.debug("-- 加载菜单信息 --");
+    	logger.debug("-- 登录成功 --");
+   		return "/system/homepage/main";
+   	}
+    
+    /**
+     * 方法名称: queryForList
+     * 方法描述: 加载用户菜单数据
+     * 返回类型: Object
+     * 创建人：chens
+     * 创建时间：2015年12月4日 下午2:01:04
+     * @throws
+     */
+    @RequestMapping(value="/getMenuData.html")
+  	public @ResponseBody Object  queryForList(){
     	Integer uid=LoginManger.getLoginId();
     	/**角色列表 **/
     	List<Role> roles=userService.findRolesByUserId(uid);
+    	/**存储当前用户所拥有的资源信息 **/
     	Set<MenuTreeObject> treeObjects=new HashSet<MenuTreeObject>();
     	/**存储当前用户的资源url **/
     	Set<String> menuSet=new HashSet<String>();
+    	Set<Resource> reSet=new HashSet<Resource>();
     	if(roles!=null&&roles.size()>0){
+    	   /**遍历所有的角色拥有的资源 **/
     	   for(Role role : roles){
-    		   /**资源信息 **/
 	 		   List<Resource> resources=roleService.findReourceByRoleId(role.getId());
-    		   MenuTreeObject meTreeObject=null;
-	 		   for(Resource resource : resources) {
-				   meTreeObject=new MenuTreeObject();
-				   meTreeObject.setHref(resource.getResUrl());
-				   meTreeObject.setId(resource.getId());
-				   meTreeObject.setName(resource.getResName());
-				   meTreeObject.setpId(resource.getParentId());
-    		       treeObjects.add(meTreeObject);
-    		       if(StringUtils.isNotEmpty(resource.getResUrl())){
-    		    	  menuSet.add(resource.getResUrl());
-    		       }
-	 		   }
-		   }	
+	 		   /**存储所有的资源信息，根据角色去重复 **/
+	 		   reSet.addAll(resources);
+ 		      }
+    	   	  MenuTreeObject meTreeObject=null;
+    	   	  for(Resource resource : reSet) {
+				  meTreeObject=new MenuTreeObject();
+				  meTreeObject.setHref(resource.getResUrl());
+				  meTreeObject.setId(resource.getId());
+				  meTreeObject.setName(resource.getResName());
+				  meTreeObject.setpId(resource.getParentId());
+				  meTreeObject.setOpen(true);
+				  treeObjects.add(meTreeObject);
+			      if(StringUtils.isNotEmpty(resource.getResUrl())){
+			    	 menuSet.add(resource.getResUrl());
+			      } 
+		      }	
     	}
-    	model.addAttribute("userInfo",LoginManger.getUserName());
-    	model.addAttribute("menus",treeObjects);
     	/**存储菜单信息到ThreadLocal **/
     	LoginManger.setResource(menuSet);
-    	System.out.println("资源列表:"+treeObjects);
-   		return "/system/homepage/main";
-   	}
-	
-    /**
-     * 方法名称: logout
-     * 方法描述: 用户注销
-     * 返回类型: String
-     * 创建人：chens
-     * 创建时间：2015年12月3日 上午11:45:13
-     * @throws
-     */
-    @RequestMapping(value = "/logout")
-	public String logout() {
-		SecurityUtils.getSubject().logout();  
-		return "redirect:login";
+      	return JsonUtils.toJSON(treeObjects);
+ 	}
+      
+    //加载左边菜单
+    @RequestMapping(value = "leftMenu.html")
+	public String leftMenu(Model model) {
+		return "/system/homepage/menu";
 	}
+    
+    //加载头部菜单
+    @RequestMapping(value = "top.html")
+	public String top(Model model) {
+    	model.addAttribute("userName",LoginManger.getUserName());
+		return "/system/homepage/top";
+	}
+    
+    //加载首页内容
+    @RequestMapping(value = "homepage.html")
+	public String homepage() {
+    	logger.info("---加载首页内容----");
+		return "/system/homepage/homepage";
+	}
+    
 
 }

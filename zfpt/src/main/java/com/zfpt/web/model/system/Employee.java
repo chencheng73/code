@@ -22,7 +22,7 @@ public class Employee implements Serializable{
 	
 	
 	private Long empployeeId;//员工工号
-	private Long deptId;//部门编号
+	private Department dept;//部门实体
 	private Long  birthday;
 	private Long  hireDate;
 	private Long  leavingDate;
@@ -30,6 +30,7 @@ public class Employee implements Serializable{
 	
 	private Integer gender ;
 	private Integer isDelete ;//是否有效：0无效，1有效，默认为1
+	
 	public String getName() {
 		return name;
 	}
@@ -72,11 +73,11 @@ public class Employee implements Serializable{
 	public void setEmpployeeId(Long empployeeId) {
 		this.empployeeId = empployeeId;
 	}
-	public Long getDeptId() {
-		return deptId;
+	public Department getDept() {
+		return dept;
 	}
-	public void setDeptId(Long deptId) {
-		this.deptId = deptId;
+	public void setDept(Department dept) {
+		this.dept = dept;
 	}
 	public Long getBirthday() {
 		return birthday;
@@ -112,7 +113,7 @@ public class Employee implements Serializable{
 	public String toString() {
 		return "Employee [name=" + name + ", email=" + email + ", tele=" + tele
 				+ ", address=" + address + ", memo1=" + memo1 + ", memo2="
-				+ memo2 + ", empployeeId=" + empployeeId + ", deptId=" + deptId
+				+ memo2 + ", empployeeId=" + empployeeId + ", dept=" + dept
 				+ ", birthday=" + birthday + ", hireDate=" + hireDate
 				+ ", leavingDate=" + leavingDate + ", gender=" + gender
 				+ ", isDelete=" + isDelete + "]";

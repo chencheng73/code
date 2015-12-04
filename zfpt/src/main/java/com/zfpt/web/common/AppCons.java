@@ -23,7 +23,7 @@ public class AppCons {
 	public final static String file_upload_path=file_root+"/upload/";
 	/**不同的业务模块存储在不同的路径code,默认common,同时便于用于数据库区分 **/
 	public final static String file_mod_code="common";
-	
+	/**存储系统菜单 **/
 	public static Set<String> menuSet;
 	
 }

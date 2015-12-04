@@ -13,7 +13,6 @@
     <!-- 员工表 -->
    	<resultMap type="com.zfpt.web.model.system.Employee" id="employeeResultMap">
 		<id column="empployee_id" property="empployeeId" jdbcType="BIGINT"/>
-		<result column="deptId" property="deptId" jdbcType="BIGINT"/>
 		<result column="birthday" property="birthday" jdbcType="BIGINT"/>
 		<result column="hireDate" property="hireDate" jdbcType="BIGINT"/>
 		<result column="leavingDate" property="leavingDate" jdbcType="BIGINT"/>
@@ -30,11 +29,26 @@
 		
 	</resultMap>
 	
+    <!-- 员工关联部门 -->
+   	<resultMap type="com.zfpt.web.model.system.Employee" id="employeeAndDeptmentResultMap" extends="employeeResultMap">
+		<!-- 配置映射的关联的部门信息 -->
+		<!-- association：用于映射关联查询单个对象的信息 property：要将关联查询的用户信息映射到Orders中哪个属性
+		 -->
+		<association property="dept"  javaType="com.zfpt.web.model.system.Department">
+			<!-- id：关联查询用户的唯 一标识
+			column：指定唯 一标识部门信息的列
+			javaType：映射到dept的哪个属性
+			 -->
+			<id column="ID" property="id" jdbcType="INTEGER"/>
+			<result column="deptName" property="name" jdbcType="VARCHAR"/>
+		</association>
+	</resultMap>
+	
 	
 	
 	<!-- 分页查询 -->
-	<select id="listPage" parameterType="page" resultMap="employeeResultMap" useCache="false">
-		select  <include refid="employeeColumns"/>  from <include refid="table"/> u  
+	<select id="listPage" parameterType="page" resultMap="employeeAndDeptmentResultMap" useCache="false">
+		SELECT d.name as deptName,e.* from zfpt_system_employee e LEFT JOIN zfpt_system_department d ON  e.deptId = d.id
    </select>
    
    <!-- 配置查询条件实例

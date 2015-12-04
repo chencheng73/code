@@ -58,7 +58,7 @@ public class PagePlugin implements Interceptor {
 				}else{
 					Connection connection = (Connection) ivk.getArgs()[0];
 					String sql = boundSql.getSql();
-					String countSql = "select count(0) from"+suffixStr(removeOrderBys(sql)); //记录统计 == oracle 加 as 报错(SQL command not properly ended)
+					String countSql = "select count(0) from "+suffixStr(removeOrderBys(sql)); //记录统计 == oracle 加 as 报错(SQL command not properly ended)
 					
 					
 					PreparedStatement countStmt = connection.prepareStatement(countSql);
@@ -182,7 +182,7 @@ public class PagePlugin implements Interceptor {
 	   */
 	public static String suffixStr(String toSql){
 		toSql=toSql.toLowerCase();
-		int sun = toSql.indexOf("from");
+		int sun = toSql.indexOf("from ");
 		String f1 = toSql.substring(sun-1,sun);
 		String f2 = toSql.substring(sun+4,sun+5);
 		if(f1.trim().isEmpty()&&f2.trim().isEmpty()){//判断第一个from的前后是否为空
