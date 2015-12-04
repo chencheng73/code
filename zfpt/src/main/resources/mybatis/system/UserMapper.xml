@@ -109,6 +109,15 @@
 		where id=#{id}
 	</update>
 	
+	<!-- 更新密码 -->
+	<update id="updatePwd" parameterType="java.util.Map">
+		update <include refid="table"/> 
+		  set 
+			  userPassword= #{userPassword},credentialsSalt=#{credentialsSalt}
+		  where id=#{id}
+	</update>
+	
+	
 	<!-- 删除 -->
 	<delete id="delete" parameterType="java.lang.Integer">
 		delete from <include refid="table"/> where id = #{id}
