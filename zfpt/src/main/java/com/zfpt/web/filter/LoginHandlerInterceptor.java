@@ -1,6 +1,9 @@
 package com.zfpt.web.filter;
 
+<<<<<<< HEAD
 import java.io.IOException;
+=======
+>>>>>>> f59d01742d927199f244f8570e425f92f5f8b5d7
 import java.io.PrintWriter;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
@@ -11,6 +14,7 @@ import com.zfpt.framework.context.LoginManger;
 import com.zfpt.web.common.AppCons;
 import com.zfpt.web.model.system.User;
 /**
+<<<<<<< HEAD
  * 项目名称：zfpt   
  * 类名称：LoginHandlerInterceptor   
  * 类描述： 自定义权限拦截器  
@@ -22,6 +26,13 @@ import com.zfpt.web.model.system.User;
 public class LoginHandlerInterceptor extends HandlerInterceptorAdapter{
 	
 	private static final String[] IGNORE_URI = {"/login","/init"};
+=======
+ * @author admin
+ */
+public class LoginHandlerInterceptor extends HandlerInterceptorAdapter{
+	
+	private static final String[] IGNORE_URI = {"/login/login","/login/index","/login/main"};
+>>>>>>> f59d01742d927199f244f8570e425f92f5f8b5d7
 	
 	 public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 	        boolean flag = true;
@@ -61,8 +72,15 @@ public class LoginHandlerInterceptor extends HandlerInterceptorAdapter{
  				  }
  			  }
         	  if(!flag){
+<<<<<<< HEAD
         		  this.print(response, "<script>alert('抱歉,该资源您无权限访问,请联系系统管理员!');"
         		  		+ "window.location.href='"+AppCons.contextPath+"/index.html'</script>");
+=======
+        		  PrintWriter out = response.getWriter();
+        		  out.print("<script>alert('非法请求URL!')</script>");
+        		  out.flush();
+        		  out.close();
+>>>>>>> f59d01742d927199f244f8570e425f92f5f8b5d7
         		  return false;
         	  }
 	        }
@@ -74,6 +92,7 @@ public class LoginHandlerInterceptor extends HandlerInterceptorAdapter{
 	        super.postHandle(request, response, handler, modelAndView);
 	    }
 	 
+<<<<<<< HEAD
 	    /**
 	     * 方法名称: print
 	     * 方法描述: 输出数据
@@ -95,4 +114,6 @@ public class LoginHandlerInterceptor extends HandlerInterceptorAdapter{
 			out.flush();
 			out.close();
 		 }
+=======
+>>>>>>> f59d01742d927199f244f8570e425f92f5f8b5d7
 }
