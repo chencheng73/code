@@ -40,8 +40,8 @@ function login(){
  <legend>系统安全登录</legend>
  <div align="center">
 	 <form action="" method="post">
-	   <label>用户名:</label><span><input type="text" name="loginCode" id="username" /></span><br/><br/>
-	   <label>密&nbsp;&nbsp;&nbsp;码:</label><span><input  type="password" name="userPassword" id="password"  /></span><br/><br/>
+	   <label>用户名:</label><span><input type="text" name="loginCode" id="username" value="admin"/></span><br/><br/>
+	   <label>密&nbsp;&nbsp;&nbsp;码:</label><span><input  type="password" name="userPassword" id="password" value="123456"/></span><br/><br/>
 	   <input type="button" value="登录" onclick="javascript:login();">
 	   <input type="button" value="重置" onclick="javascript:reset();">
 	 </form>

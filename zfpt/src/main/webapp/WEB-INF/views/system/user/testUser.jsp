@@ -215,7 +215,7 @@ background: #FFF
     <label class="col-sm-3 control-label">邮&nbsp;&nbsp; 箱</label><input type="text" class="form-control checkacc" placeholder="请输入邮箱" name="email" id="email">
     <label class="col-sm-3 control-label">手机号码</label><input type="text" class="form-control checkacc" placeholder="手机号码" name="mobile" id="mobile">	
     <label class="col-sm-3 control-label">是否启用</label>	<input type="radio" name="status" value='0' checked="checked">是 <input type="radio" name="status" value='1'>否<br/><br/>
-    <label class="col-sm-3 control-label">部 门名称</label> 
+    <label class="col-sm-3 control-label">部门名称</label> 
     <input id="deptId" name="deptmentId"  type="hidden"    readonly/>
     <input id="deptName"  type="text"   style="width:160px;" onclick="showMenu('deptId','deptName');" readonly/>
 <!--  <a id="menuBtn" href="#" onclick="showMenu(); return false;">选择部门</a> -->
