@@ -1,5 +1,6 @@
 package com.zfpt.web.filter;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
@@ -10,11 +11,17 @@ import com.zfpt.framework.context.LoginManger;
 import com.zfpt.web.common.AppCons;
 import com.zfpt.web.model.system.User;
 /**
- * @author admin
+ * 项目名称：zfpt   
+ * 类名称：LoginHandlerInterceptor   
+ * 类描述： 自定义权限拦截器  
+ * 创建人：chens
+ * 创建时间：2015年12月4日 上午9:24:08   
+ * 修改备注：   
+ * @version
  */
 public class LoginHandlerInterceptor extends HandlerInterceptorAdapter{
 	
-	private static final String[] IGNORE_URI = {"/login/login","/login/index","/login/main"};
+	private static final String[] IGNORE_URI = {"/login","/init"};
 	
 	 public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 	        boolean flag = true;
@@ -54,10 +61,8 @@ public class LoginHandlerInterceptor extends HandlerInterceptorAdapter{
  				  }
  			  }
         	  if(!flag){
-        		  PrintWriter out = response.getWriter();
-        		  out.print("<script>alert('非法请求URL!')</script>");
-        		  out.flush();
-        		  out.close();
+        		  this.print(response, "<script>alert('抱歉,该资源您无权限访问,请联系系统管理员!');"
+        		  		+ "window.location.href='"+AppCons.contextPath+"/index.html'</script>");
         		  return false;
         	  }
 	        }
@@ -69,4 +74,25 @@ public class LoginHandlerInterceptor extends HandlerInterceptorAdapter{
 	        super.postHandle(request, response, handler, modelAndView);
 	    }
 	 
+	    /**
+	     * 方法名称: print
+	     * 方法描述: 输出数据
+	     * 返回类型: void
+	     * 创建人：chens
+	     * 创建时间：2015年12月4日 上午9:44:49
+	     * @throws
+	     */
+	    protected void print(HttpServletResponse response,String htmlInfo) {
+			response.setHeader("Cache-Control", "no-cache");
+			response.setContentType("text/html; charset=utf-8");
+			PrintWriter out = null;
+			try {
+				 out = response.getWriter();
+				 out.print(htmlInfo);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			out.flush();
+			out.close();
+		 }
 }
