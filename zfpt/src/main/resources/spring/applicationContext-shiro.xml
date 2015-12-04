@@ -45,21 +45,22 @@
         <property name="sessionManager" ref="sessionManager"/>
         <property name="kickoutAfter" value="false"/>
         <property name="maxSession" value="1"/>
-        <property name="kickoutUrl" value="/login/index"/>
+        <property name="kickoutUrl" value="/index.html"/>
     </bean>
     
     
 	<!-- 配置shiro的过滤器工厂类，id- shiroFilter要和在web.xml中配置的过滤器一致 -->
 	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
 		<property name="securityManager" ref="securityManager" />
-		<property name="loginUrl" value="/login/index" />
-		<property name="successUrl" value="/login/main" />
+		<property name="loginUrl" value="/index.html" />
+		<property name="successUrl" value="/main.html" />
 		<property name="unauthorizedUrl" value="/denied.jsp" />
 		<property name="filterChainDefinitions">
 		   <value>
                 <!-- 静态资源允许访问 -->
                 /app/** = anon
                 /assets/** = anon
+                /admin_files/** = anon
                 /web/** = anon
                 /js/** = anon
                 /css/** = anon
