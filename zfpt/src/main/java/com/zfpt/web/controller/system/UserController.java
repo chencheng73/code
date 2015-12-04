@@ -32,7 +32,6 @@ import com.zfpt.web.service.system.IUserService;
  * 修改备注：   
  * @version
  */
-//@RestController
 @Controller
 @RequestMapping("/system/user")
 public class UserController  extends BaseController{
