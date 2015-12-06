@@ -1,7 +1,5 @@
 package com.zfpt.web.controller.system;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -52,8 +50,6 @@ public class LoginController{
     private IUserService userService;
 	@Autowired
 	private IRoleService roleService;
-	@Autowired
-	private IResourceService resourceService;
     
     /**
      * 方法名称: init
@@ -116,30 +112,10 @@ public class LoginController{
 			returnInfo.put("info","登录异常，请联系管理员！");
 		}
 		/**初始化加载系统菜单 **/
-		loadSystemResource();
 		return JsonUtils.toJSON(returnInfo);
 	}
     
-    /**
-     * 方法名称: loadSystemResource
-     * 方法描述: 加载系统菜单
-     * 返回类型: void
-     * 创建人：chens
-     * 创建时间：2015年12月4日 上午9:52:54
-     * @throws
-     */
-	private void loadSystemResource() {
-	      List<MenuTreeObject> menuTreeObjects=resourceService.findResourcesByParentId(0);
-	      Set<String> menuSet=new HashSet<String>();
-	  	  if(menuTreeObjects!=null&&menuTreeObjects.size()>0){
-		     for(MenuTreeObject meTreeObject : menuTreeObjects) {
-	            if(StringUtils.isNotEmpty(meTreeObject.getHref())){
-	    	       menuSet.add(meTreeObject.getHref());
-	            }
-		     }
-		     AppCons.menuSet=menuSet;
-		   }	
-		}
+ 
     
     /**
      * 方法名称: logout

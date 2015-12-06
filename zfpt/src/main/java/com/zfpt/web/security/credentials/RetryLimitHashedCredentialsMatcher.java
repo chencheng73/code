@@ -12,15 +12,29 @@ import org.apache.shiro.cache.Cache;
 import org.apache.shiro.cache.CacheManager;
 import org.apache.shiro.util.ByteSource;
 
-
+/**
+ * 
+ * @author chens
+ *限制登录次数，如果5次出错，锁定1个小时 
+ */
 public class RetryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher {
-    private Cache<String, AtomicInteger> passwordRetryCache;
+    
+	private int allowRetryCount;
+	
+	private Cache<String, AtomicInteger> passwordRetryCache;
 
     public RetryLimitHashedCredentialsMatcher(CacheManager cacheManager) {
         passwordRetryCache = cacheManager.getCache("passwordRetryCache");
     }
 
-    @Override
+    
+    public void setAllowRetryCount(int allowRetryCount) {
+		this.allowRetryCount = allowRetryCount;
+	}
+
+
+
+	@Override
     public boolean doCredentialsMatch(AuthenticationToken token,
         AuthenticationInfo info) {
         String username = (String) token.getPrincipal();
@@ -33,7 +47,7 @@ public class RetryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher
             passwordRetryCache.put(username, retryCount);
         }
 
-        if (retryCount.incrementAndGet() > 5) {
+        if (retryCount.incrementAndGet() > allowRetryCount) {
             // if retry count > 5 throw
             throw new ExcessiveAttemptsException();
         }

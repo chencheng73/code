@@ -17,6 +17,8 @@
 		<property name="hashAlgorithmName" value="md5" />
 		<property name="hashIterations" value="2" />
 		<property name="storedCredentialsHexEncoded" value="true" />
+		<!-- 限制登录次数，如果5次出错，锁定10分钟  -->
+		<property name="allowRetryCount" value="5"></property>
 	</bean>
 	
 	<!-- 凭证匹配器 -->
@@ -37,7 +39,8 @@
         <!--<property name="authorizationCachingEnabled" value="true"/>-->
         <!--<property name="authorizationCacheName" value="authorizationCache"/>-->
 	</bean>
-  <!--    <bean id="sysUserFilter" class="com.lanyuan.shiro.filter.SysUserFilter"/> -->
+	
+      <bean id="sysUserFilter" class="com.zfpt.web.security.filter.SysUserFilter"/> 
     
      <!-- 会话配置 -->
 	 <bean id="kickoutSessionControlFilter" class="com.zfpt.web.security.filter.KickoutSessionControlFilter">
@@ -55,9 +58,37 @@
 		<property name="loginUrl" value="/index.html" />
 		<property name="successUrl" value="/main.html" />
 		<property name="unauthorizedUrl" value="/denied.jsp" />
-		<property name="filterChainDefinitions">
+				<!-- 自定义权限配置 -->
+		<property name="filterChainDefinitionMap" ref="chainDefinitionSectionMetaSource" />
+		<!-- <property name="filterChainDefinitions">
 		   <value>
-                <!-- 静态资源允许访问 -->
+                静态资源允许访问
+                /app/** = anon
+                /assets/** = anon
+                /admin_files/** = anon
+                /web/** = anon
+                /js/** = anon
+                /css/** = anon
+                登录页允许访问
+                /login/** = anon
+                /druid/**=anon
+                其他资源需要认证
+                /**=kickout,sysuser,authc,user
+			</value>
+		</property> -->
+	    <property name="filters">
+            <util:map>
+                <entry key="kickout" value-ref="kickoutSessionControlFilter"/>
+                <entry key="sysuser" value-ref="sysUserFilter"/>
+            </util:map>
+         </property>
+	</bean>
+	
+    <!--自定义filterChainDefinitionMap -->
+	<bean id="chainDefinitionSectionMetaSource" class="com.zfpt.web.security.ChainDefinitionSectionMetaSource">
+		<property name="filterChainDefinitions">
+			<value>
+			   <!-- 静态资源允许访问 -->
                 /app/** = anon
                 /assets/** = anon
                 /admin_files/** = anon
@@ -68,17 +99,11 @@
                 /login/** = anon
                 /druid/**=anon
                 <!-- 其他资源需要认证 -->
-                /** = authc
+                /**=kickout,sysuser,authc,user
 			</value>
 		</property>
-	    <property name="filters">
-            <util:map>
-                <entry key="kickout" value-ref="kickoutSessionControlFilter"/>
-            </util:map>
-         </property>
-	</bean>
-	
- 
+    </bean>
+  
 	<bean id="sessionIdGenerator" class="org.apache.shiro.session.mgt.eis.JavaUuidSessionIdGenerator"/>
 	
 	 <!-- 会话DAO -->

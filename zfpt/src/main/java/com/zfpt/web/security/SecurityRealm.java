@@ -17,6 +17,7 @@ import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.zfpt.framework.util.StringUtils;
 import com.zfpt.web.model.system.Resource;
 import com.zfpt.web.model.system.Role;
 import com.zfpt.web.model.system.User;
@@ -50,9 +51,11 @@ public class SecurityRealm extends AuthorizingRealm {
 			if(roleInfos!=null&&roleInfos.size()>0){
 			   for(Role role : roleInfos) {
 				   List<Resource> resources=roleService.findReourceByRoleId(role.getId());
-				   authorizationInfo.addRole(role.getRoleName());
+				   //authorizationInfo.addRole(role.getRoleName());
 				   for(Resource resource:resources){
-					   authorizationInfo.addStringPermission(resource.getResUrl()+"");
+					   if(StringUtils.isNotEmpty(resource.getResUrl())){
+						   authorizationInfo.addStringPermission(resource.getResUrl()+"");
+					   }
 				   }
 			   }	
 			}
